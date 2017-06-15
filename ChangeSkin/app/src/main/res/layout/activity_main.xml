@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/skin_image_bg"
+    tools:context="com.zwb.changeskin.MainActivity">
+
+    <Button
+        android:id="@+id/plug_skin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="插件换肤" />
+
+    <Button
+        android:id="@+id/reset_skin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/plug_skin"
+        android:text="恢复默认" />
+    <Button
+        android:id="@+id/test_factory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/reset_skin"
+        android:text="test_factory" />
+</RelativeLayout>
