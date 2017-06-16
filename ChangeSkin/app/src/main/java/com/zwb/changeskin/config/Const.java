@@ -8,5 +8,5 @@ package com.zwb.changeskin.config;
 
 public class Const {
 
-    public static final String SKIN_PREFIX = "sink_";//需要换肤的值的前缀
+    public static final String SKIN_PREFIX = "skin_";//需要换肤的值的前缀
 }

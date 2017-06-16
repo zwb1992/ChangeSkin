@@ -1,29 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/skin_image_bg"
-    tools:context="com.zwb.changeskin.MainActivity">
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/plug_skin"
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="插件换肤" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/reset_skin"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/plug_skin"
-        android:text="恢复默认" />
-    <Button
-        android:id="@+id/test_factory"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/skin_image_icon" />
+
+        <Button
+            android:id="@+id/plug_skin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="插件换肤"
+            android:textColor="@color/skin_text_color" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/reset_skin"
-        android:text="test_factory" />
-</RelativeLayout>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/skin_image_icon" />
+
+        <Button
+            android:id="@+id/reset_skin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/plug_skin"
+            android:text="恢复默认"
+            android:textColor="@color/skin_text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/skin_image_icon" />
+
+        <Button
+            android:id="@+id/test_factory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/reset_skin"
+            android:text="test_factory"
+            android:textAllCaps="false"
+            android:textColor="@color/skin_text_color" />
+    </LinearLayout>
+</LinearLayout>
