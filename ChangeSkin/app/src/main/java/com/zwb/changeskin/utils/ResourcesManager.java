@@ -6,11 +6,13 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import com.zwb.changeskin.attr.SkinView;
 import com.zwb.changeskin.callback.ISkinChangedListener;
 import com.zwb.changeskin.callback.ISkinChangingCallback;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,7 @@ public class ResourcesManager {
     private static ResourcesManager instance;
     private Map<ISkinChangedListener, List<SkinView>> mSkinViewMap = new HashMap<>();
     private List<ISkinChangedListener> mListeners = new ArrayList<>();
+    private PrefUtils prefUtils;
 
     public static ResourcesManager getInstance() {
         if (instance == null) {
@@ -44,6 +47,18 @@ public class ResourcesManager {
 
     public void init(Context mContext) {
         this.mContext = mContext;
+        prefUtils = new PrefUtils(mContext);
+        try {
+            String pluginPath = prefUtils.getPath();
+            String pluginPkg = prefUtils.getPkg();
+            File file = new File(pluginPath);
+            if (file.exists()) {
+                loadPlugin(pluginPath, pluginPkg);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            prefUtils.clear();
+        }
     }
 
 
@@ -52,19 +67,17 @@ public class ResourcesManager {
     }
 
 
-    private void loadPlugin(String apkPath, String packageName) {
+    private void loadPlugin(String apkPath, String packageName) throws Exception {
+        if (apkPath.equals(this.apkPath) && packageName.equals(this.packageName)) {
+            return;
+        }
+        AssetManager assetManager = AssetManager.class.newInstance();
+        AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, apkPath);
+        resources = new Resources(assetManager,
+                mContext.getResources().getDisplayMetrics(),
+                mContext.getResources().getConfiguration());
         this.apkPath = apkPath;
         this.packageName = packageName;
-        try {
-            AssetManager assetManager = AssetManager.class.newInstance();
-            AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, apkPath);
-            resources = new Resources(assetManager,
-                    mContext.getResources().getDisplayMetrics(),
-                    mContext.getResources().getConfiguration());
-        } catch (Exception e) {
-            e.printStackTrace();
-            resources = null;
-        }
     }
 
     /**
@@ -117,6 +130,7 @@ public class ResourcesManager {
                     loadPlugin(apkPath, packageName);
                 } catch (Exception e) {
                     finalCallback.onError();
+                    prefUtils.clear();
                 }
                 return null;
             }
@@ -127,9 +141,12 @@ public class ResourcesManager {
                 try {
                     notifyChangedListener();
                     finalCallback.onComplete();
+                    prefUtils.savePath(apkPath);
+                    prefUtils.savePkg(packageName);
                 } catch (Exception e) {
                     e.printStackTrace();
                     finalCallback.onError();
+                    prefUtils.clear();
                 }
             }
         }.execute();
@@ -142,11 +159,14 @@ public class ResourcesManager {
         }
     }
 
-    private void skinChanged(ISkinChangedListener listener) {
+    public void skinChanged(ISkinChangedListener listener) {
         List<SkinView> skinViews = mSkinViewMap.get(listener);
         for (SkinView skinView : skinViews) {
             skinView.apply();
         }
     }
 
+    public boolean needChange() {
+        return !TextUtils.isEmpty(apkPath);
+    }
 }

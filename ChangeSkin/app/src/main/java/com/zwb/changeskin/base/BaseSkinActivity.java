@@ -92,7 +92,9 @@ public class BaseSkinActivity extends AppCompatActivity implements ISkinChangedL
         skinViews.add(new SkinView(view, skinAttrs));
 
         //当前是否需要自动换肤
-        // TODO: 2017/6/16
+        if (ResourcesManager.getInstance().needChange()) {
+            ResourcesManager.getInstance().skinChanged(this);
+        }
     }
 
 
