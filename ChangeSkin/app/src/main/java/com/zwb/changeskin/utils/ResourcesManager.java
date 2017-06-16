@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.zwb.changeskin.attr.SkinView;
 import com.zwb.changeskin.callback.ISkinChangedListener;
@@ -33,6 +34,7 @@ public class ResourcesManager {
     private Map<ISkinChangedListener, List<SkinView>> mSkinViewMap = new HashMap<>();
     private List<ISkinChangedListener> mListeners = new ArrayList<>();
     private PrefUtils prefUtils;
+    private String suffix;
 
     public static ResourcesManager getInstance() {
         if (instance == null) {
@@ -51,14 +53,25 @@ public class ResourcesManager {
         try {
             String pluginPath = prefUtils.getPath();
             String pluginPkg = prefUtils.getPkg();
+            suffix = prefUtils.getSuffix();
             File file = new File(pluginPath);
             if (file.exists()) {
                 loadPlugin(pluginPath, pluginPkg);
+            } else if (!TextUtils.isEmpty(suffix)) {
+                resources = mContext.getResources();
+                packageName = mContext.getPackageName();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            prefUtils.clear();
+            clearPluginInfo();
         }
+    }
+
+    private void clearPluginInfo() {
+        apkPath = null;
+        packageName = null;
+        suffix = null;
+        prefUtils.clear();
     }
 
 
@@ -71,6 +84,7 @@ public class ResourcesManager {
         if (apkPath.equals(this.apkPath) && packageName.equals(this.packageName)) {
             return;
         }
+        suffix = null;
         AssetManager assetManager = AssetManager.class.newInstance();
         AssetManager.class.getDeclaredMethod("addAssetPath", String.class).invoke(assetManager, apkPath);
         resources = new Resources(assetManager,
@@ -87,6 +101,7 @@ public class ResourcesManager {
      * @return
      */
     public Drawable getDrawableByName(String name) {
+        name = appendSuffix(name);
         if (resources != null) {
             return resources.getDrawable(resources.getIdentifier(name, "mipmap", packageName));
         }
@@ -94,10 +109,18 @@ public class ResourcesManager {
     }
 
     public ColorStateList getColorByName(String name) {
+        name = appendSuffix(name);
         if (resources != null) {
             return resources.getColorStateList(resources.getIdentifier(name, "color", packageName));
         }
         return null;
+    }
+
+    private String appendSuffix(String name) {
+        if (!TextUtils.isEmpty(suffix)) {
+            name += "_" + suffix;
+        }
+        return name;
     }
 
     public List<SkinView> getSkinViews(ISkinChangedListener listener) {
@@ -117,6 +140,15 @@ public class ResourcesManager {
         mSkinViewMap.remove(listener);
     }
 
+    public void changeSkin(String suffix) {
+        clearPluginInfo();
+        this.suffix = suffix;
+        prefUtils.saveSuffix(suffix);
+        resources = mContext.getResources();
+        packageName = mContext.getPackageName();
+        notifyChangedListener();
+    }
+
     public void changeSkin(final String apkPath, final String packageName, ISkinChangingCallback callback) {
         if (callback == null) {
             callback = ISkinChangingCallback.DEFAULT_SKIN_CHANGING_CALLBACK;
@@ -130,7 +162,7 @@ public class ResourcesManager {
                     loadPlugin(apkPath, packageName);
                 } catch (Exception e) {
                     finalCallback.onError();
-                    prefUtils.clear();
+                    clearPluginInfo();
                 }
                 return null;
             }
@@ -141,12 +173,14 @@ public class ResourcesManager {
                 try {
                     notifyChangedListener();
                     finalCallback.onComplete();
+                    suffix = null;
+                    prefUtils.saveSuffix(suffix);
                     prefUtils.savePath(apkPath);
                     prefUtils.savePkg(packageName);
                 } catch (Exception e) {
                     e.printStackTrace();
                     finalCallback.onError();
-                    prefUtils.clear();
+                    clearPluginInfo();
                 }
             }
         }.execute();
@@ -167,6 +201,6 @@ public class ResourcesManager {
     }
 
     public boolean needChange() {
-        return !TextUtils.isEmpty(apkPath);
+        return !TextUtils.isEmpty(apkPath) || !TextUtils.isEmpty(suffix);
     }
 }

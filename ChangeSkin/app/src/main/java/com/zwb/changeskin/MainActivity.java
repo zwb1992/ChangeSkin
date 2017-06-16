@@ -20,7 +20,7 @@ public class MainActivity extends BaseSkinActivity implements View.OnClickListen
     private static final String packageName = "com.zwb.skin_plug";
 
     private LinearLayout mainLayout;
-    private Button plug_skin, reset_skin, test_factory;
+    private Button plug_skin, reset_skin, test_factory, suffix_skin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,8 @@ public class MainActivity extends BaseSkinActivity implements View.OnClickListen
         reset_skin.setOnClickListener(this);
         test_factory = (Button) findViewById(R.id.test_factory);
         test_factory.setOnClickListener(this);
+        suffix_skin = (Button) findViewById(R.id.suffix_skin);
+        suffix_skin.setOnClickListener(this);
     }
 
     @Override
@@ -57,7 +59,10 @@ public class MainActivity extends BaseSkinActivity implements View.OnClickListen
                 });
                 break;
             case R.id.reset_skin:
-                mainLayout.setBackgroundResource(R.mipmap.skin_image_bg);
+                ResourcesManager.getInstance().changeSkin("");
+                break;
+            case R.id.suffix_skin:
+                ResourcesManager.getInstance().changeSkin("red");
                 break;
             case R.id.test_factory:
                 startActivity(new Intent(this, TestFactoryActivity.class));

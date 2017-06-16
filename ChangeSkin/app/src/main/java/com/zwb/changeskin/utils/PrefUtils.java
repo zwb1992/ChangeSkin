@@ -39,6 +39,16 @@ public class PrefUtils {
         return sp.getString(Const.PLUGIN_PKG, null);
     }
 
+    public void saveSuffix(String suffix) {
+        SharedPreferences sp = mContex.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
+        sp.edit().putString(Const.SUFFIX_NAME, suffix).apply();
+    }
+
+    public String getSuffix() {
+        SharedPreferences sp = mContex.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
+        return sp.getString(Const.SUFFIX_NAME, null);
+    }
+
     public void clear() {
         SharedPreferences sp = mContex.getSharedPreferences(Const.PREF_NAME, Context.MODE_PRIVATE);
         sp.edit().clear().apply();

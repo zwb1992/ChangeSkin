@@ -15,4 +15,6 @@ public class Const {
     public static final String PLUGIN_PATH = "skin_path";
 
     public static final String PLUGIN_PKG = "skin_pkg";
+
+    public static final String SUFFIX_NAME = "skin_SUFFIX";
 }
